@@ -1,0 +1,134 @@
+/***************************************************************************
+ Grupo: www.tinyurl.com/SanUSB - Versao Modem Slave - CCS Compiler
+ video-aulas: https://www.youtube.com/results?search_query=sanusb
+
+ APK disponivel em https://play.google.com/store/apps/details?id=appinventor.ai_sandro_juca.BT4SanUSB
+
+ Video-aulas: http://www.youtube.com/watch?v=vtS2rq_sO5M ,  http://www.youtube.com/watch?v=5bOcVZqi0GM ,
+
+ http://www.youtube.com/watch?v=k2quWQlc-ro e https://www.youtube.com/watch?v=V65-Vt91rug
+
+A Placa SanUSB pode ser construída pelo tutorial em 
+https://dl.dropboxusercontent.com/u/101922388/121007SanUSBOrig.zip
+ou adquirida com dimmer no Mercado Livre: http://lista.mercadolivre.com.br/sanusb
+
+ **********************************************************************************/
+#include "SanUSBfly.h"
+
+//#define pinoblue pin_b3       //pinos para serem conectados ao led RGB
+//#define pinogreen pin_b4
+//#define pinored pin_b5
+
+#define pinored pin_c2 //pinos para serem conectados ao led RGB
+#define pinoblue pin_c1
+#define pinogreen pin_c0
+
+short int pisca=0, chegou=0, chegou1=0, flag=0, c=0, flagstart=0, flagBD=0, zeit=1;
+unsigned char comando[30], comand[30], n=0, m=0, c1=0, c2=0,f=0;
+unsigned char S=130>>1, a=168>>1, an=86>>1, u=132>>1,us=130>>1, b=170>>1,x=136>>1,z=106>>1;
+unsigned int16 i=0,j=0
+;
+
+#INT_RDA
+void recepcao_serial()
+{
+comando[n]=RCREG; m=n;comand[n]= comando[n];
+
+   if (comando[0]!='L' && flagstart==0) {flagstart=1; flagBD=1; zeit=1; n=0;}
+
+   if (comando[0]==65) {flag=1;pisca=0;zeit=1; }
+++n;
+
+switch (comando[0])
+   {
+      case  79 : { chegou=1; flag=0; m=0; flagBD=0;}
+            break;
+ 
+      case 'R' : { if (n>=4)  {comand[1]=comando[1]; //Led RGB catodo comum//
+         comand[2]=comando[2];comand[3]= comando[3]; n=0; comando[0]=32;
+         output_toggle(pin_b7); chegou=0; zeit=0;}} 
+         break; //*/
+
+      case 'L' : {flag=0; n=0; c=1; chegou=0; zeit=1;output_high(pin_B7);pisca=0;}
+            break;
+      case 'D' : {flag=0; n=0; chegou=0; zeit=1;output_low(pin_B7);pisca=0;}
+            break;
+      case 'P': { pisca=1; flag=0; n=0; chegou=0; zeit=1; }
+            break;
+   }
+}
+
+void main()
+{
+  taxa_serial(9600);
+  enable_interrupts(GLOBAL);
+  enable_interrupts(INT_RDA);
+  #priority rda //serial
+
+   for(k=0;k<=25;k++){comando[k]=32;}
+   for(k=0;k<=25;k++){comand[k]=32;}
+
+   SPBRGH = 0x02; SPBRG = 0x70;
+
+   while(TRUE)
+   {
+    while (pisca==1){output_toggle(pin_B7);delay_ms (300);n=0;m=0;}
+    
+    if (!input(pin_e3)){chegou1=0;if(flagBD==0 && c1==3){ c1=2; write_eeprom(251,2);}
+   // sendsw("https://docs.google.com/forms/d/1PZOqjnitER0m03Ix4r9gDBqhp7Xs1YrPmjLymE2VWAU/"
+   //              "formResponse?ifq&entry.962023089=325&entry.1225247694=30&entry.1468266733=279&entry.1609904957=89&entry.1589284333=25&submit=Submit");
+   
+    //Transferir o link de post dos sensores 1, 2, 3 e 4 
+   //    sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor1.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put");
+ //    sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor2.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put");
+   //  sendsw(" https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor3.csv?key=JS56n0EL0vPDzBbX746eJ0q3nnXkBg3U5OYX8SsNPpDFG3TN&_method=put");
+     sendsw(" https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor4.csv?key=JS56n0EL0vPDzBbX746eJ0q3nnXkBg3U5OYX8SsNPpDFG3TN&_method=put");
+   
+   //Transferir o link do data view
+   //sendsw("https://xively.com/develop/S2NG-0eTy-7PUe-iH_J4");
+                                 n=0; output_toggle(pin_B7);delay_ms(2000); }
+        ++f;sendnum(f);swputc('#');delay_ms(1000);output_toggle(pin_B7);sendsw("20*");delay_ms(1000);output_toggle(pin_B7);
+        sendsw("30!");delay_ms(1000);output_toggle(pin_B7);sendsw("40$");delay_ms(2000);output_toggle(pin_B7);
+        
+/*
+if (flagBD==1 && chegou==0 && c==0){
+  SPBRGH = 0x04; SPBRG = 0xE1;
+  swputc(S);swputc(a);swputc(an);swputc(u);swputc(us);
+  swputc(b);swputc(x);swputc(z);
+  delay_ms(1000); output_toggle(pin_b7);
+  SPBRGH = 0x02; SPBRG = 0x70;
+                                    }
+
+        if (flag==1) { flag=0; output_toggle(pin_b7);
+
+                  if (m==12) {comand[1]=a;comand[3]=78;comand[5]=77;comand[8]=S;comand[10]=b;comand[12]=u;
+                  for(k=0;k<=m;k++){swputc(comand[k]);}
+                  for(k=m+1;k<25;k++){swputc(32);}
+                   ++j;if(j>=5){j=0;flagBD=1;}
+                             }
+      write_eeprom(250,m); //PLatz von m-Byte-Zaeler
+
+      if (c==1){ 
+      for(k=0;k<=25;k++){swputc(comand[k]);}
+      for(k=0;k<=25;k++){comando[k]=32;comand[k]=32;}
+      n=0;m=0; }
+
+       delay_ms(1000); }
+
+      if(chegou==0 && zeit==1){
+      c1=read_eeprom(251);if(c1==255){++c2;if(c2>3){write_eeprom(251,3);}}//Das erste Lesen ist 255
+      if (c==0 && c1==3 && flagBD==0){output_toggle(pin_b7);//write_eeprom(251,3);
+      if(m<=12 || m==255){flag=1; m=12;
+      comand[0]=S;comand[2]=an;comand[4]=S;comand[6]=69;comand[7]=83;comand[9]=78;comand[11]=83;
+                         }
+                                     }
+                              }
+
+   delay_us(30);    
+   if(zeit==1){delay_ms(1000);n=0;}
+   ++i; if(i>255) {i=0;}
+   if(i>=comand[1]){output_high(pinored);} else {output_low(pinored);}
+   if(i>=comand[2]){output_high(pinogreen);} else {output_low(pinogreen);}
+   if(i>=comand[3]){output_high(pinoblue);} else {output_low(pinoblue);}
+*/
+ }}

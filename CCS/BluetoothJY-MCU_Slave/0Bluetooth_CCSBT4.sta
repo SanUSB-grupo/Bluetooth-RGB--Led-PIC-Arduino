@@ -1,0 +1,50 @@
+
+ROM used: 1588 (5%)
+          1592 (5%) including unused fragments
+
+          3 Average locations per line
+          8 Average locations per statement
+
+RAM used: 109 (5%) at main() level
+          126 (6%) worst case
+
+Stack used: 3 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  121   188  94  0Bluetooth_CCSBT4.c
+   51    12   6  SanUSBT.h
+  430     0   0  ..\..\..\..\..\..\..\..\Program Files (x86)\PICC4\devices\18F4550.h
+----- -----
+  602   200 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     40   1   1             @delay_ms1
+0     12   0   1    57  3.0  serial_putc
+0    102   3   8   390  4.5  taxa_serial
+0    124   4  13   114  3.4  @DIV3232
+0    220   7   3  1721  7.4  recepcao_serial
+0    936  29   3  4756  9.4  MAIN
+
+Program metrics:
+    Functions               5
+    Statements              200
+    Comments                160
+    Volume (V)              8425
+    Difficilty (D)          28.5
+    Effort to implement (E) 239759
+    Time to implement (T)   3 hours, 42 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   31
+    Maintainability (MI)    102
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00FFE     0  4096  
+01000-01006     4  4  
+01008-0109C   150  0  
+0109E-07FFE  1434  27080  
+
+
+

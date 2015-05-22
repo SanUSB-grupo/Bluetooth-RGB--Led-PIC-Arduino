@@ -1,0 +1,879 @@
+CCS PCH C Compiler, Version 4.084, 29964               03-jan-15 23:18
+
+               Filename: C:\Users\Sandro\Dropbox\Public\BluetoothSanUSB\FirmwareBT4\CCS\BluetoothJY-MCU_Slave\0Bluetooth_CCSBD.lst
+
+               ROM used: 1860 bytes (6%)
+                         Largest free fragment is 26808
+               RAM used: 111 (5%) at main() level
+                         263 (13%) worst case
+               Stack:    3 worst case (2 in main + 1 for interrupts)
+
+*
+1000:  GOTO   154C
+*
+1008:  MOVWF  05
+100A:  MOVFF  FD8,06
+100E:  MOVFF  FE0,07
+1012:  MOVLB  0
+1014:  MOVFF  FE9,0D
+1018:  MOVFF  FEA,08
+101C:  MOVFF  FE1,09
+1020:  MOVFF  FE2,0A
+1024:  MOVFF  FD9,0B
+1028:  MOVFF  FDA,0C
+102C:  MOVFF  FF3,14
+1030:  MOVFF  FF4,15
+1034:  MOVFF  FFA,16
+1038:  MOVFF  00,0F
+103C:  MOVFF  01,10
+1040:  MOVFF  02,11
+1044:  MOVFF  03,12
+1048:  MOVFF  04,13
+104C:  BTFSS  F9D.5
+104E:  GOTO   1058
+1052:  BTFSC  F9E.5
+1054:  GOTO   113C
+1058:  MOVFF  0F,00
+105C:  MOVFF  10,01
+1060:  MOVFF  11,02
+1064:  MOVFF  12,03
+1068:  MOVFF  13,04
+106C:  MOVFF  0D,FE9
+1070:  MOVFF  08,FEA
+1074:  BSF    08.7
+1076:  MOVFF  09,FE1
+107A:  MOVFF  0A,FE2
+107E:  MOVFF  0B,FD9
+1082:  MOVFF  0C,FDA
+1086:  MOVFF  14,FF3
+108A:  MOVFF  15,FF4
+108E:  MOVFF  16,FFA
+1092:  MOVF   05,W
+1094:  MOVFF  07,FE0
+1098:  MOVFF  06,FD8
+109C:  RETFIE 0
+.................... /*************************************************************************** 
+....................  Grupo: www.tinyurl.com/SanUSB - Versao Modem Slave - CCS Compiler 
+....................  video-aulas: https://www.youtube.com/results?search_query=sanusb 
+....................  
+....................  APK disponivel em https://play.google.com/store/apps/details?id=appinventor.ai_sandro_juca.BT4SanUSB 
+....................  
+....................  Video-aulas: http://www.youtube.com/watch?v=vtS2rq_sO5M ,  http://www.youtube.com/watch?v=5bOcVZqi0GM , 
+....................  
+....................  http://www.youtube.com/watch?v=k2quWQlc-ro e https://www.youtube.com/watch?v=V65-Vt91rug 
+....................  
+.................... A Placa SanUSB pode ser construída pelo tutorial em  
+.................... https://dl.dropboxusercontent.com/u/101922388/121007SanUSBOrig.zip 
+.................... ou adquirida com dimmer no Mercado Livre: http://lista.mercadolivre.com.br/sanusb 
+....................  
+....................  **********************************************************************************/ 
+.................... #include "SanUSBfly.h" 
+.................... ///////////////////http://br.groups.yahoo.com/group/GrupoSanUSB///////////////// 
+.................... #include <18F4550.h> //This library 18F4550.h is valid for the whole family USB PIC18Fx5xx 
+.................... //////// Standard Header file for the PIC18F4550 device //////////////// 
+.................... #device PIC18F4550 
+.................... #list 
+....................  
+.................... #device PASS_STRINGS=IN_RAM 
+.................... #byte OSCCON=0XFD3 
+.................... #byte SPBRGH=0xFB0 
+.................... #byte SPBRG=0xFAF 
+.................... #byte BAUDCON= 0xFB8 
+.................... #byte TXSTA=0xFAC 
+.................... #byte RCSTA=0xFAB 
+.................... #BYTE RCREG=0xFAE 
+.................... #BYTE TXREG=0xFAD 
+.................... #BYTE PIE1=0xF9D 
+.................... #BIT TRMT=TXSTA.1 
+.................... #BIT RCIE=PIE1.5 
+.................... #bit BRG16=BAUDCON.3 
+.................... #BYTE INTCON=0xFF2 
+....................  
+....................  
+.................... #device ADC=10 
+.................... #fuses HSPLL,PLL5, USBDIV,CPUDIV1,VREGEN,NOWDT,NOPROTECT,NOLVP,NODEBUG 
+.................... #use delay(clock=48000000)// USB standard frequency (cpu and timers 12 MIPS = 4/48MHz) 
+*
+1336:  CLRF   FEA
+1338:  MOVLW  F4
+133A:  MOVWF  FE9
+133C:  MOVF   FEF,W
+133E:  BZ    135C
+1340:  MOVLW  0F
+1342:  MOVWF  01
+1344:  CLRF   00
+1346:  DECFSZ 00,F
+1348:  BRA    1346
+134A:  DECFSZ 01,F
+134C:  BRA    1344
+134E:  MOVLW  8F
+1350:  MOVWF  00
+1352:  DECFSZ 00,F
+1354:  BRA    1352
+1356:  NOP   
+1358:  DECFSZ FEF,F
+135A:  BRA    1340
+135C:  RETLW  00
+....................  
+.................... //SanUSB program memory allocation 
+.................... #define CODE_START 0x1000 
+.................... #build(reset=CODE_START, interrupt=CODE_START+0x08) 
+.................... #org 0, CODE_START-1 {} 
+....................  
+.................... unsigned char REG=0x0f, EEADR=0x33, R=0x0a, REGad=0xdf; 
+.................... unsigned char k=0; 
+....................  
+.................... void swputc(char c) 
+.................... { 
+.................... while (!TRMT); 
+135E:  BTFSS  FAC.1
+1360:  BRA    135E
+.................... TXREG=REG+c; 
+1362:  MOVF   xFA,W
+1364:  ADDWF  18,W
+1366:  MOVWF  FAD
+.................... } 
+1368:  RETLW  00
+....................  
+.................... void sputc(unsigned char c) 
+.................... { 
+.................... while (!TRMT); 
+....................     TXREG=(c>>BRG16)+REG; 
+.................... } 
+....................  
+.................... void sendsw(char st[]){ 
+....................     for(k=0;st[k]!='\0';k++) {swputc(st[k]);} 
+136A:  CLRF   1C
+136C:  CLRF   03
+136E:  MOVF   1C,W
+1370:  ADDWF  xF6,W
+1372:  MOVWF  FE9
+1374:  MOVF   xF7,W
+1376:  ADDWFC 03,W
+1378:  MOVWF  FEA
+137A:  MOVF   FEF,F
+137C:  BZ    139A
+137E:  CLRF   03
+1380:  MOVF   1C,W
+1382:  ADDWF  xF6,W
+1384:  MOVWF  FE9
+1386:  MOVF   xF7,W
+1388:  ADDWFC 03,W
+138A:  MOVWF  FEA
+138C:  MOVFF  FEF,F8
+1390:  MOVFF  F8,FA
+1394:  RCALL  135E
+1396:  INCF   1C,F
+1398:  BRA    136C
+.................... } 
+139A:  RETLW  00
+....................  
+.................... void sends(unsigned char st[]){ 
+....................     for(k=0;st[k]!='\0';k++) {sputc(st[k]);} 
+.................... } 
+....................  
+.................... void sendnum(unsigned int16 sannum) 
+.................... { 
+....................    if(sannum > 9999) { 
+*
+13DE:  MOVF   xF4,W
+13E0:  SUBLW  26
+13E2:  BC    1432
+13E4:  XORLW  FF
+13E6:  BNZ   13EE
+13E8:  MOVF   xF3,W
+13EA:  SUBLW  0F
+13EC:  BC    1432
+....................         swputc(((sannum / 10000) % 10) + '0'); //Pega o primeiro caractere do resto e transforma-o em inteiro (mais significativo que está atrás da vírgula) 
+13EE:  MOVFF  F4,F8
+13F2:  MOVFF  F3,F7
+13F6:  MOVLW  27
+13F8:  MOVWF  xFA
+13FA:  MOVLW  10
+13FC:  MOVWF  xF9
+13FE:  RCALL  139C
+1400:  MOVFF  02,F6
+1404:  MOVFF  01,F5
+1408:  MOVFF  02,F8
+140C:  MOVFF  01,F7
+1410:  CLRF   xFA
+1412:  MOVLW  0A
+1414:  MOVWF  xF9
+1416:  RCALL  139C
+1418:  MOVFF  00,F6
+141C:  MOVFF  03,F7
+1420:  MOVLW  30
+1422:  ADDWF  00,W
+1424:  MOVWF  xF8
+1426:  MOVLW  00
+1428:  ADDWFC 03,W
+142A:  MOVWF  xF9
+142C:  MOVFF  F8,FA
+1430:  RCALL  135E
+....................     } 
+....................    if(sannum > 999) { 
+1432:  MOVF   xF4,W
+1434:  SUBLW  02
+1436:  BC    1486
+1438:  XORLW  FF
+143A:  BNZ   1442
+143C:  MOVF   xF3,W
+143E:  SUBLW  E7
+1440:  BC    1486
+....................         swputc(((sannum / 1000) % 10) + '0'); 
+1442:  MOVFF  F4,F8
+1446:  MOVFF  F3,F7
+144A:  MOVLW  03
+144C:  MOVWF  xFA
+144E:  MOVLW  E8
+1450:  MOVWF  xF9
+1452:  RCALL  139C
+1454:  MOVFF  02,F6
+1458:  MOVFF  01,F5
+145C:  MOVFF  02,F8
+1460:  MOVFF  01,F7
+1464:  CLRF   xFA
+1466:  MOVLW  0A
+1468:  MOVWF  xF9
+146A:  RCALL  139C
+146C:  MOVFF  00,F6
+1470:  MOVFF  03,F7
+1474:  MOVLW  30
+1476:  ADDWF  00,W
+1478:  MOVWF  xF8
+147A:  MOVLW  00
+147C:  ADDWFC 03,W
+147E:  MOVWF  xF9
+1480:  MOVFF  F8,FA
+1484:  RCALL  135E
+....................     } 
+....................     if(sannum > 99) { 
+1486:  MOVF   xF4,F
+1488:  BNZ   1490
+148A:  MOVF   xF3,W
+148C:  SUBLW  63
+148E:  BC    14D2
+....................         swputc(((sannum / 100) % 10) + '0'); 
+1490:  MOVFF  F4,F8
+1494:  MOVFF  F3,F7
+1498:  CLRF   xFA
+149A:  MOVLW  64
+149C:  MOVWF  xF9
+149E:  RCALL  139C
+14A0:  MOVFF  02,F6
+14A4:  MOVFF  01,F5
+14A8:  MOVFF  02,F8
+14AC:  MOVFF  01,F7
+14B0:  CLRF   xFA
+14B2:  MOVLW  0A
+14B4:  MOVWF  xF9
+14B6:  RCALL  139C
+14B8:  MOVFF  00,F6
+14BC:  MOVFF  03,F7
+14C0:  MOVLW  30
+14C2:  ADDWF  00,W
+14C4:  MOVWF  xF8
+14C6:  MOVLW  00
+14C8:  ADDWFC 03,W
+14CA:  MOVWF  xF9
+14CC:  MOVFF  F8,FA
+14D0:  RCALL  135E
+....................     } 
+....................     if(sannum > 9) { 
+14D2:  MOVF   xF4,F
+14D4:  BNZ   14DC
+14D6:  MOVF   xF3,W
+14D8:  SUBLW  09
+14DA:  BC    151E
+....................         swputc(((sannum / 10) % 10) + '0'); 
+14DC:  MOVFF  F4,F8
+14E0:  MOVFF  F3,F7
+14E4:  CLRF   xFA
+14E6:  MOVLW  0A
+14E8:  MOVWF  xF9
+14EA:  RCALL  139C
+14EC:  MOVFF  02,F6
+14F0:  MOVFF  01,F5
+14F4:  MOVFF  02,F8
+14F8:  MOVFF  01,F7
+14FC:  CLRF   xFA
+14FE:  MOVLW  0A
+1500:  MOVWF  xF9
+1502:  RCALL  139C
+1504:  MOVFF  00,F6
+1508:  MOVFF  03,F7
+150C:  MOVLW  30
+150E:  ADDWF  00,W
+1510:  MOVWF  xF8
+1512:  MOVLW  00
+1514:  ADDWFC 03,W
+1516:  MOVWF  xF9
+1518:  MOVFF  F8,FA
+151C:  RCALL  135E
+....................     } 
+....................     swputc((sannum % 10) + '0'); 
+151E:  MOVFF  F4,F8
+1522:  MOVFF  F3,F7
+1526:  CLRF   xFA
+1528:  MOVLW  0A
+152A:  MOVWF  xF9
+152C:  RCALL  139C
+152E:  MOVFF  00,F5
+1532:  MOVFF  03,F6
+1536:  MOVLW  30
+1538:  ADDWF  00,W
+153A:  MOVWF  xF7
+153C:  MOVLW  00
+153E:  ADDWFC 03,W
+1540:  MOVWF  xF8
+1542:  MOVFF  F7,FA
+1546:  RCALL  135E
+....................     } 
+1548:  GOTO   16B4 (RETURN)
+....................      
+.................... /*************************************************************************************/ 
+.................... void taxa_serial(unsigned long taxa) {  
+.................... unsigned long baud_sanusb; //es klappt nut mit long 
+....................  
+....................      set_tris_c(0b10111111);  
+*
+12D0:  MOVLW  BF
+12D2:  MOVWF  F94
+....................      TXSTA = 0x24;        
+12D4:  MOVLW  24
+12D6:  MOVWF  FAC
+....................      RCSTA = 0x90;        
+12D8:  MOVLW  90
+12DA:  MOVWF  FAB
+....................      BAUDCON = 0x08;      
+12DC:  MOVLW  08
+12DE:  MOVWF  FB8
+....................  
+....................   baud_sanusb = ((48000000/4)/ taxa) - 1;  
+12E0:  CLRF   xFA
+12E2:  MOVLW  B7
+12E4:  MOVWF  xF9
+12E6:  MOVLW  1B
+12E8:  MOVWF  xF8
+12EA:  CLRF   xF7
+12EC:  CLRF   xFE
+12EE:  CLRF   xFD
+12F0:  MOVFF  F4,FC
+12F4:  MOVFF  F3,FB
+12F8:  BRA    121C
+12FA:  MOVLW  01
+12FC:  SUBWF  00,W
+12FE:  MOVWF  xF5
+1300:  MOVLW  00
+1302:  SUBWFB 01,W
+1304:  MOVWF  xF6
+....................   SPBRGH = (unsigned char)(baud_sanusb >> 8); 
+1306:  MOVF   xF6,W
+1308:  MOVWF  FB0
+....................   SPBRG = (unsigned char)baud_sanusb; 
+130A:  MOVFF  F5,FAF
+....................   REGad=R*(EEADR>>1)+3; 
+130E:  BCF    FD8.0
+1310:  RRCF   19,W
+1312:  MULWF  1A
+1314:  MOVF   FF3,W
+1316:  ADDLW  03
+1318:  MOVWF  1B
+....................   REG=read_eeprom(REGad); 
+131A:  MOVFF  FF2,F7
+131E:  BCF    FF2.7
+1320:  MOVFF  1B,FA9
+1324:  BCF    FA6.6
+1326:  BCF    FA6.7
+1328:  BSF    FA6.0
+132A:  MOVF   FA8,W
+132C:  BTFSC  xF7.7
+132E:  BSF    FF2.7
+1330:  MOVWF  18
+....................                                    } 
+1332:  GOTO   15C0 (RETURN)
+....................                                     
+....................                                     
+....................  
+....................  
+....................  
+....................  
+.................... //#define pinoblue pin_b3       //pinos para serem conectados ao led RGB 
+.................... //#define pinogreen pin_b4 
+.................... //#define pinored pin_b5 
+....................  
+.................... #define pinored pin_c2 //pinos para serem conectados ao led RGB 
+.................... #define pinoblue pin_c1 
+.................... #define pinogreen pin_c0 
+....................  
+.................... short int pisca=0, chegou=0, chegou1=0, flag=0, c=0, flagstart=0, flagBD=0, zeit=1; 
+.................... unsigned char comando[30], comand[30], n=0, m=0, c1=0, c2=0,f=0; 
+.................... unsigned char S=130>>1, a=168>>1, an=86>>1, u=132>>1,us=130>>1, b=170>>1,x=136>>1,z=106>>1; 
+.................... unsigned int16 i=0,j=0 
+.................... ; 
+....................  
+.................... #INT_RDA 
+.................... void recepcao_serial() 
+.................... { 
+.................... comando[n]=RCREG; m=n;comand[n]= comando[n]; 
+*
+113C:  CLRF   03
+113E:  MOVF   5A,W
+1140:  ADDLW  1E
+1142:  MOVWF  FE9
+1144:  MOVLW  00
+1146:  ADDWFC 03,W
+1148:  MOVWF  FEA
+114A:  MOVFF  FAE,FEF
+114E:  MOVFF  5A,5B
+1152:  CLRF   03
+1154:  MOVF   5A,W
+1156:  ADDLW  3C
+1158:  MOVWF  01
+115A:  MOVLW  00
+115C:  ADDWFC 03,F
+115E:  MOVLB  1
+1160:  MOVFF  03,105
+1164:  CLRF   03
+1166:  MOVF   5A,W
+1168:  ADDLW  1E
+116A:  MOVWF  FE9
+116C:  MOVLW  00
+116E:  ADDWFC 03,W
+1170:  MOVWF  FEA
+1172:  MOVFF  FEF,106
+1176:  MOVFF  105,FEA
+117A:  MOVFF  01,FE9
+117E:  MOVFF  106,FEF
+....................  
+....................    if (comando[0]!='L' && flagstart==0) {flagstart=1; flagBD=1; zeit=1; n=0;} 
+1182:  MOVF   1E,W
+1184:  SUBLW  4C
+1186:  BZ    1194
+1188:  BTFSC  1D.5
+118A:  BRA    1194
+118C:  BSF    1D.5
+118E:  BSF    1D.6
+1190:  BSF    1D.7
+1192:  CLRF   5A
+....................  
+....................    if (comando[0]==65) {flag=1;pisca=0;zeit=1; } 
+1194:  MOVF   1E,W
+1196:  SUBLW  41
+1198:  BNZ   11A0
+119A:  BSF    1D.3
+119C:  BCF    1D.0
+119E:  BSF    1D.7
+.................... ++n; 
+11A0:  INCF   5A,F
+....................  
+.................... switch (comando[0]) 
+....................    { 
+11A2:  MOVF   1E,W
+11A4:  XORLW  4F
+11A6:  MOVLB  0
+11A8:  BZ    11BC
+11AA:  XORLW  1D
+11AC:  BZ    11C6
+11AE:  XORLW  1E
+11B0:  BZ    11E8
+11B2:  XORLW  08
+11B4:  BZ    11FA
+11B6:  XORLW  14
+11B8:  BZ    120A
+11BA:  BRA    1216
+....................       case  79 : { chegou=1; flag=0; m=0; flagBD=0;} 
+11BC:  BSF    1D.1
+11BE:  BCF    1D.3
+11C0:  CLRF   5B
+11C2:  BCF    1D.6
+....................             break; 
+11C4:  BRA    1216
+....................   
+....................       case 'R' : { if (n>=4)  {comand[1]=comando[1]; //Led RGB catodo comum// 
+11C6:  MOVF   5A,W
+11C8:  SUBLW  03
+11CA:  BC    11E6
+11CC:  MOVFF  1F,3D
+....................          comand[2]=comando[2];comand[3]= comando[3]; n=0; comando[0]=32; 
+11D0:  MOVFF  20,3E
+11D4:  MOVFF  21,3F
+11D8:  CLRF   5A
+11DA:  MOVLW  20
+11DC:  MOVWF  1E
+....................          output_toggle(pin_b7); chegou=0; zeit=0;}}  
+11DE:  BCF    F93.7
+11E0:  BTG    F8A.7
+11E2:  BCF    1D.1
+11E4:  BCF    1D.7
+....................          break; //*/ 
+11E6:  BRA    1216
+....................  
+....................       case 'L' : {flag=0; n=0; c=1; chegou=0; zeit=1;output_high(pin_B7);pisca=0;} 
+11E8:  BCF    1D.3
+11EA:  CLRF   5A
+11EC:  BSF    1D.4
+11EE:  BCF    1D.1
+11F0:  BSF    1D.7
+11F2:  BCF    F93.7
+11F4:  BSF    F8A.7
+11F6:  BCF    1D.0
+....................             break; 
+11F8:  BRA    1216
+....................       case 'D' : {flag=0; n=0; chegou=0; zeit=1;output_low(pin_B7);pisca=0;} 
+11FA:  BCF    1D.3
+11FC:  CLRF   5A
+11FE:  BCF    1D.1
+1200:  BSF    1D.7
+1202:  BCF    F93.7
+1204:  BCF    F8A.7
+1206:  BCF    1D.0
+....................             break; 
+1208:  BRA    1216
+....................       case 'P': { pisca=1; flag=0; n=0; chegou=0; zeit=1; } 
+120A:  BSF    1D.0
+120C:  BCF    1D.3
+120E:  CLRF   5A
+1210:  BCF    1D.1
+1212:  BSF    1D.7
+....................             break; 
+1214:  BRA    1216
+....................    } 
+.................... } 
+....................  
+1216:  BCF    F9E.5
+1218:  GOTO   1058
+.................... void main() 
+.................... { 
+*
+154C:  CLRF   FF8
+154E:  BCF    FD0.7
+1550:  BSF    08.7
+1552:  CLRF   FEA
+1554:  CLRF   FE9
+1556:  MOVF   FC1,W
+1558:  ANDLW  C0
+155A:  IORLW  0F
+155C:  MOVWF  FC1
+155E:  MOVLW  07
+1560:  MOVWF  FB4
+1562:  MOVLW  0F
+1564:  MOVWF  18
+1566:  MOVLW  33
+1568:  MOVWF  19
+156A:  MOVLW  0A
+156C:  MOVWF  1A
+156E:  MOVLW  DF
+1570:  MOVWF  1B
+1572:  CLRF   1C
+1574:  BCF    1D.0
+1576:  BCF    1D.1
+1578:  BCF    1D.2
+157A:  BCF    1D.3
+157C:  BCF    1D.4
+157E:  BCF    1D.5
+1580:  BCF    1D.6
+1582:  BSF    1D.7
+1584:  CLRF   5A
+1586:  CLRF   5B
+1588:  CLRF   5C
+158A:  CLRF   5D
+158C:  CLRF   5E
+158E:  MOVLW  41
+1590:  MOVWF  5F
+1592:  MOVLW  54
+1594:  MOVWF  x60
+1596:  MOVLW  2B
+1598:  MOVWF  x61
+159A:  MOVLW  42
+159C:  MOVWF  x62
+159E:  MOVLW  41
+15A0:  MOVWF  x63
+15A2:  MOVLW  55
+15A4:  MOVWF  x64
+15A6:  MOVLW  44
+15A8:  MOVWF  x65
+15AA:  MOVLW  35
+15AC:  MOVWF  x66
+15AE:  CLRF   x67
+15B0:  CLRF   x68
+15B2:  CLRF   x69
+15B4:  CLRF   x6A
+....................   taxa_serial(9600); 
+15B6:  MOVLW  25
+15B8:  MOVWF  xF4
+15BA:  MOVLW  80
+15BC:  MOVWF  xF3
+15BE:  BRA    12D0
+....................   enable_interrupts(GLOBAL); 
+15C0:  MOVLW  C0
+15C2:  IORWF  FF2,F
+....................   enable_interrupts(INT_RDA); 
+15C4:  BSF    F9D.5
+....................   #priority rda //serial 
+....................  
+....................    for(k=0;k<=25;k++){comando[k]=32;} 
+15C6:  CLRF   1C
+15C8:  MOVF   1C,W
+15CA:  SUBLW  19
+15CC:  BNC   15E4
+15CE:  CLRF   03
+15D0:  MOVF   1C,W
+15D2:  ADDLW  1E
+15D4:  MOVWF  FE9
+15D6:  MOVLW  00
+15D8:  ADDWFC 03,W
+15DA:  MOVWF  FEA
+15DC:  MOVLW  20
+15DE:  MOVWF  FEF
+15E0:  INCF   1C,F
+15E2:  BRA    15C8
+....................    for(k=0;k<=25;k++){comand[k]=32;} 
+15E4:  CLRF   1C
+15E6:  MOVF   1C,W
+15E8:  SUBLW  19
+15EA:  BNC   1602
+15EC:  CLRF   03
+15EE:  MOVF   1C,W
+15F0:  ADDLW  3C
+15F2:  MOVWF  FE9
+15F4:  MOVLW  00
+15F6:  ADDWFC 03,W
+15F8:  MOVWF  FEA
+15FA:  MOVLW  20
+15FC:  MOVWF  FEF
+15FE:  INCF   1C,F
+1600:  BRA    15E6
+....................  
+....................    SPBRGH = 0x02; SPBRG = 0x70; 
+1602:  MOVLW  02
+1604:  MOVWF  FB0
+1606:  MOVLW  70
+1608:  MOVWF  FAF
+....................  
+....................    while(TRUE) 
+....................    { 
+....................     while (pisca==1){output_toggle(pin_B7);delay_ms (300);n=0;m=0;} 
+160A:  BTFSS  1D.0
+160C:  BRA    1626
+160E:  BCF    F93.7
+1610:  BTG    F8A.7
+1612:  MOVLW  02
+1614:  MOVWF  xF3
+1616:  MOVLW  96
+1618:  MOVWF  xF4
+161A:  RCALL  1336
+161C:  DECFSZ xF3,F
+161E:  BRA    1616
+1620:  CLRF   5A
+1622:  CLRF   5B
+1624:  BRA    160A
+....................      
+....................     if (!input(pin_e3)){chegou1=0;if(flagBD==0 && c1==3){ c1=2; write_eeprom(251,2);} 
+1626:  BSF    F96.3
+1628:  BTFSC  F84.3
+162A:  BRA    16AA
+162C:  BCF    1D.2
+162E:  BTFSC  1D.6
+1630:  BRA    1668
+1632:  MOVF   5C,W
+1634:  SUBLW  03
+1636:  BNZ   1668
+1638:  MOVLW  02
+163A:  MOVWF  5C
+163C:  MOVLW  FB
+163E:  MOVWF  FA9
+1640:  MOVLW  02
+1642:  MOVWF  FA8
+1644:  BCF    FA6.6
+1646:  BCF    FA6.7
+1648:  BSF    FA6.2
+164A:  MOVFF  FF2,00
+164E:  BCF    FF2.7
+1650:  MOVLB  F
+1652:  MOVLW  55
+1654:  MOVWF  FA7
+1656:  MOVLW  AA
+1658:  MOVWF  FA7
+165A:  BSF    FA6.1
+165C:  BTFSC  FA6.1
+165E:  BRA    165C
+1660:  BCF    FA6.2
+1662:  MOVF   00,W
+1664:  IORWF  FF2,F
+1666:  MOVLB  0
+....................    // sendsw("https://docs.google.com/forms/d/1PZOqjnitER0m03Ix4r9gDBqhp7Xs1YrPmjLymE2VWAU/" 
+....................    //              "formResponse?ifq&entry.962023089=325&entry.1225247694=30&entry.1468266733=279&entry.1609904957=89&entry.1589284333=25&submit=Submit"); 
+....................     
+....................     //Transferir o link de post dos sensores 1, 2, 3 e 4  
+....................    //    sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor1.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put"); 
+....................  //    sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor2.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put"); 
+....................    //  sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor3.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put"); 
+....................      sendsw("https://api.xively.com/v2/feeds/1234872801/datastreams/Sensor4.csv?key=DBR1HOHydGBiK5XcMZTIlwZK7AhbWnp8Uwyknx0aZVSEI8WB&_method=put"); 
+1668:  CLRF   FEA
+166A:  MOVLW  6B
+166C:  MOVWF  FE9
+166E:  MOVFF  FF2,F3
+1672:  BCF    FF2.7
+1674:  MOVLW  84
+1676:  MOVWF  01
+1678:  CLRF   FF7
+167A:  MOVLW  00
+167C:  RCALL  109E
+167E:  TBLRD*-
+1680:  TBLRD*+
+1682:  MOVFF  FF5,FEE
+1686:  DECFSZ 01,F
+1688:  BRA    1680
+168A:  BTFSC  xF3.7
+168C:  BSF    FF2.7
+168E:  CLRF   xF7
+1690:  MOVLW  6B
+1692:  MOVWF  xF6
+1694:  RCALL  136A
+....................     
+....................    //Transferir o link do data view 
+....................    //sendsw("https://xively.com/develop/S2NG-0eTy-7PUe-iH_J4"); 
+....................                                  n=0; output_toggle(pin_B7);delay_ms(2000); } 
+1696:  CLRF   5A
+1698:  BCF    F93.7
+169A:  BTG    F8A.7
+169C:  MOVLW  08
+169E:  MOVWF  xF3
+16A0:  MOVLW  FA
+16A2:  MOVWF  xF4
+16A4:  RCALL  1336
+16A6:  DECFSZ xF3,F
+16A8:  BRA    16A0
+....................         ++f;sendnum(f);swputc('#');delay_ms(1000);output_toggle(pin_B7);sendsw("20*");delay_ms(1000);output_toggle(pin_B7); 
+16AA:  INCF   5E,F
+16AC:  CLRF   xF4
+16AE:  MOVFF  5E,F3
+16B2:  BRA    13DE
+16B4:  MOVLW  23
+16B6:  MOVWF  xFA
+16B8:  RCALL  135E
+16BA:  MOVLW  04
+16BC:  MOVWF  xF3
+16BE:  MOVLW  FA
+16C0:  MOVWF  xF4
+16C2:  RCALL  1336
+16C4:  DECFSZ xF3,F
+16C6:  BRA    16BE
+16C8:  BCF    F93.7
+16CA:  BTG    F8A.7
+16CC:  MOVLW  32
+16CE:  MOVWF  xEF
+16D0:  MOVLW  30
+16D2:  MOVWF  xF0
+16D4:  MOVLW  2A
+16D6:  MOVWF  xF1
+16D8:  CLRF   xF2
+16DA:  CLRF   xF7
+16DC:  MOVLW  EF
+16DE:  MOVWF  xF6
+16E0:  RCALL  136A
+16E2:  MOVLW  04
+16E4:  MOVWF  xF3
+16E6:  MOVLW  FA
+16E8:  MOVWF  xF4
+16EA:  RCALL  1336
+16EC:  DECFSZ xF3,F
+16EE:  BRA    16E6
+16F0:  BCF    F93.7
+16F2:  BTG    F8A.7
+....................         sendsw("30!");delay_ms(1000);output_toggle(pin_B7);sendsw("40$");delay_ms(2000);output_toggle(pin_B7); 
+16F4:  MOVLW  33
+16F6:  MOVWF  xEF
+16F8:  MOVLW  30
+16FA:  MOVWF  xF0
+16FC:  MOVLW  21
+16FE:  MOVWF  xF1
+1700:  CLRF   xF2
+1702:  CLRF   xF7
+1704:  MOVLW  EF
+1706:  MOVWF  xF6
+1708:  RCALL  136A
+170A:  MOVLW  04
+170C:  MOVWF  xF3
+170E:  MOVLW  FA
+1710:  MOVWF  xF4
+1712:  RCALL  1336
+1714:  DECFSZ xF3,F
+1716:  BRA    170E
+1718:  BCF    F93.7
+171A:  BTG    F8A.7
+171C:  MOVLW  34
+171E:  MOVWF  xEF
+1720:  MOVLW  30
+1722:  MOVWF  xF0
+1724:  MOVLW  24
+1726:  MOVWF  xF1
+1728:  CLRF   xF2
+172A:  CLRF   xF7
+172C:  MOVLW  EF
+172E:  MOVWF  xF6
+1730:  RCALL  136A
+1732:  MOVLW  08
+1734:  MOVWF  xF3
+1736:  MOVLW  FA
+1738:  MOVWF  xF4
+173A:  RCALL  1336
+173C:  DECFSZ xF3,F
+173E:  BRA    1736
+1740:  BCF    F93.7
+1742:  BTG    F8A.7
+....................          
+.................... /* 
+.................... if (flagBD==1 && chegou==0 && c==0){ 
+....................   SPBRGH = 0x04; SPBRG = 0xE1; 
+....................   swputc(S);swputc(a);swputc(an);swputc(u);swputc(us); 
+....................   swputc(b);swputc(x);swputc(z); 
+....................   delay_ms(1000); output_toggle(pin_b7); 
+....................   SPBRGH = 0x02; SPBRG = 0x70; 
+....................                                     } 
+....................  
+....................         if (flag==1) { flag=0; output_toggle(pin_b7); 
+....................  
+....................                   if (m==12) {comand[1]=a;comand[3]=78;comand[5]=77;comand[8]=S;comand[10]=b;comand[12]=u; 
+....................                   for(k=0;k<=m;k++){swputc(comand[k]);} 
+....................                   for(k=m+1;k<25;k++){swputc(32);} 
+....................                    ++j;if(j>=5){j=0;flagBD=1;} 
+....................                              } 
+....................       write_eeprom(250,m); //PLatz von m-Byte-Zaeler 
+....................  
+....................       if (c==1){  
+....................       for(k=0;k<=25;k++){swputc(comand[k]);} 
+....................       for(k=0;k<=25;k++){comando[k]=32;comand[k]=32;} 
+....................       n=0;m=0; } 
+....................  
+....................        delay_ms(1000); } 
+....................  
+....................       if(chegou==0 && zeit==1){ 
+....................       c1=read_eeprom(251);if(c1==255){++c2;if(c2>3){write_eeprom(251,3);}}//Das erste Lesen ist 255 
+....................       if (c==0 && c1==3 && flagBD==0){output_toggle(pin_b7);//write_eeprom(251,3); 
+....................       if(m<=12 || m==255){flag=1; m=12; 
+....................       comand[0]=S;comand[2]=an;comand[4]=S;comand[6]=69;comand[7]=83;comand[9]=78;comand[11]=83; 
+....................                          } 
+....................                                      } 
+....................                               } 
+....................  
+....................    delay_us(30);     
+....................    if(zeit==1){delay_ms(1000);n=0;} 
+....................    ++i; if(i>255) {i=0;} 
+....................    if(i>=comand[1]){output_high(pinored);} else {output_low(pinored);} 
+....................    if(i>=comand[2]){output_high(pinogreen);} else {output_low(pinogreen);} 
+....................    if(i>=comand[3]){output_high(pinoblue);} else {output_low(pinoblue);} 
+.................... */ 
+....................  }} 
+1744:  BRA    160A
+1746:  SLEEP 
+
+Configuration Fuses:
+   Word  1: 0E24   NOIESO NOFCMEN HSPLL PLL5 CPUDIV1 USBDIV
+   Word  2: 1E3E   BROWNOUT NOWDT BORV20 PUT WDT32768 VREGEN
+   Word  3: 8300   PBADEN CCP2C1 MCLR NOLPT1OSC RESERVED
+   Word  4: 0081   STVREN NODEBUG NOLVP NOXINST NOICPRT RESERVED
+   Word  5: C00F   NOPROTECT NOCPD NOCPB
+   Word  6: E00F   NOWRT NOWRTD NOWRTC NOWRTB
+   Word  7: 400F   NOEBTR NOEBTRB

@@ -1,0 +1,25 @@
+ÀÄ0Bluetooth_CCSBT4
+   ÃÄMAIN  0/936  Ram=3
+   ³  ÃÄ??0??
+   ³  ÃÄtaxa_serial  0/102  Ram=8
+   ³  ³  ÀÄ@DIV3232  0/124  Ram=13
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄserial_putc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÀÄ@delay_ms1  0/40  Ram=1
+   ÀÄrecepcao_serial  0/220  Ram=3

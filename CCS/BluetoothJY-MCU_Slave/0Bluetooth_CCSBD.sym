@@ -1,0 +1,162 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @SCRATCH
+005     @INTERRUPT_AREA
+006     @INTERRUPT_AREA
+007     @INTERRUPT_AREA
+008     @INTERRUPT_AREA
+009     @INTERRUPT_AREA
+00A     @INTERRUPT_AREA
+00B     @INTERRUPT_AREA
+00C     @INTERRUPT_AREA
+00D     @INTERRUPT_AREA
+00E     @INTERRUPT_AREA
+00F     @INTERRUPT_AREA
+010     @INTERRUPT_AREA
+011     @INTERRUPT_AREA
+012     @INTERRUPT_AREA
+013     @INTERRUPT_AREA
+014     @INTERRUPT_AREA
+015     @INTERRUPT_AREA
+016     @INTERRUPT_AREA
+017     @INTERRUPT_AREA
+018     REG
+019     EEADR
+01A     R
+01B     REGad
+01C     k
+01D.0   pisca
+01D.1   chegou
+01D.2   chegou1
+01D.3   flag
+01D.4   c
+01D.5   flagstart
+01D.6   flagBD
+01D.7   zeit
+01E-03B comando
+03C-059 comand
+05A     n
+05B     m
+05C     c1
+05D     c2
+05E     f
+05F     S
+060     a
+061     an
+062     u
+063     us
+064     b
+065     x
+066     z
+067-068 i
+069-06A j
+06B-0EE @STRPARAM
+0EF-0F2 @STRPARAM
+0F3-0F4 taxa_serial.taxa
+0F3-0F4 sendnum.sannum
+0F3     MAIN.@SCRATCH1
+0F4     @delay_ms1.P1
+0F4     MAIN.@SCRATCH2
+0F5-0F6 taxa_serial.baud_sanusb
+0F5     sendnum.@SCRATCH1
+0F5     MAIN.@SCRATCH3
+0F6-0F7 sendsw.st
+0F6     sendnum.@SCRATCH2
+0F6     MAIN.@SCRATCH4
+0F7-0F8 @DIV1616.P1
+0F7-0FA @DIV3232.P2
+0F7     sendnum.@SCRATCH3
+0F7     taxa_serial.@SCRATCH1
+0F8     sendsw.@SCRATCH1
+0F8     sendnum.@SCRATCH4
+0F8     taxa_serial.@SCRATCH2
+0F9-0FA @DIV1616.P1
+0F9     sendnum.@SCRATCH5
+0F9     taxa_serial.@SCRATCH3
+0FA     swputc.c
+0FA     taxa_serial.@SCRATCH4
+0FB-0FE @DIV3232.P1
+0FB     @DIV1616.@SCRATCH1
+0FF     @DIV3232.@SCRATCH1
+100     @DIV3232.@SCRATCH2
+101     @DIV3232.@SCRATCH3
+102     @DIV3232.@SCRATCH4
+103     @DIV3232.@SCRATCH5
+104     recepcao_serial.@SCRATCH1
+105     recepcao_serial.@SCRATCH2
+106     recepcao_serial.@SCRATCH3
+F83     PSP_DATA
+F9D     PIE1
+F9D.5   RCIE
+FAB     RCSTA
+FAC     TXSTA
+FAC.1   TRMT
+FAD     TXREG
+FAE     RCREG
+FAF     SPBRG
+FB0     SPBRGH
+FB4.6   C1OUT
+FB4.7   C2OUT
+FB8     BAUDCON
+FB8.3   BRG16
+FBB     CCP_2
+FBB     CCP_2_LOW
+FBB     CCP_2_HIGH
+FBE     CCP_1_HIGH
+FBE     CCP_1_LOW
+FBE     CCP_1
+FD3     OSCCON
+FE9-FEA @READ_PROGRAM_MEMORY.P1
+FE9-FEA @WRITE_PROGRAM_MEMORY.P2
+FF2     INTCON
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+1336  @delay_ms1
+135E  swputc
+136A  sendsw
+13DE  sendnum
+139C  @DIV1616
+12D0  taxa_serial
+121C  @DIV3232
+113C  recepcao_serial
+154C  MAIN
+109E  @const122
+154C  @cinit
+
+
+User Memory space: 
+
+Project Directory:
+    C:\Users\Sandro\Dropbox\Public\BluetoothSanUSB\FirmwareBT4\CCS\BluetoothJY-MCU_Slave\
+
+Project Files:
+    0Bluetooth_CCSBD.c
+    SanUSBfly.h
+    ..\..\..\..\..\..\..\..\Program Files (x86)\PICC4\devices\18F4550.h
+
+Units:
+    C:\Users\Sandro\Dropbox\Public\BluetoothSanUSB\FirmwareBT4\CCS\BluetoothJY-MCU_Slave\0Bluetooth_CCSBD.c (main)
+
+Compiler Settings:
+    Processor:      PIC18F4550
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      0Bluetooth_CCSBD.err
+    Ext Symbols: 0Bluetooth_CCSBD.esym
+    INHX32:      0Bluetooth_CCSBD.hex
+    Symbols:     0Bluetooth_CCSBD.sym
+    List:        0Bluetooth_CCSBD.lst
+    Debug/COFF:  0Bluetooth_CCSBD.cof
+    Project:     0Bluetooth_CCSBD.PJT
+    Call Tree:   0Bluetooth_CCSBD.tre
+    Statistics:  0Bluetooth_CCSBD.sta

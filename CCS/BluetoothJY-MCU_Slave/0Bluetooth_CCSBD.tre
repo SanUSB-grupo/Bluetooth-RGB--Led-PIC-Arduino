@@ -1,0 +1,37 @@
+ÀÄ0Bluetooth_CCSBD
+   ÃÄMAIN  0/508  Ram=4
+   ³  ÃÄ??0??
+   ³  ÃÄtaxa_serial  0/102  Ram=8
+   ³  ³  ÀÄ@DIV3232  0/180  Ram=13
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄ@const122  0/158  Ram=0
+   ³  ÃÄsendsw  0/50  Ram=3
+   ³  ³  ÀÄswputc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄsendnum  0/366  Ram=7
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄswputc  0/12  Ram=1
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄswputc  0/12  Ram=1
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄswputc  0/12  Ram=1
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÃÄswputc  0/12  Ram=1
+   ³  ³  ÃÄ@DIV1616  0/66  Ram=5
+   ³  ³  ÀÄswputc  0/12  Ram=1
+   ³  ÃÄswputc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄsendsw  0/50  Ram=3
+   ³  ³  ÀÄswputc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄsendsw  0/50  Ram=3
+   ³  ³  ÀÄswputc  0/12  Ram=1
+   ³  ÃÄ@delay_ms1  0/40  Ram=1
+   ³  ÃÄsendsw  0/50  Ram=3
+   ³  ³  ÀÄswputc  0/12  Ram=1
+   ³  ÀÄ@delay_ms1  0/40  Ram=1
+   ÀÄrecepcao_serial  0/224  Ram=3

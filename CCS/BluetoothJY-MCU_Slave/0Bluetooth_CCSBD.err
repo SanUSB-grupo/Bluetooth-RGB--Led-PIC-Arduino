@@ -1,0 +1,13 @@
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 27(56,58): Variable never used:   c2
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(15,16): Variable never used:   S
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(25,26): Variable never used:   a
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(35,37): Variable never used:   an
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(45,46): Variable never used:   u
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(54,56): Variable never used:   us
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(65,66): Variable never used:   b
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(74,75): Variable never used:   x
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 28(83,84): Variable never used:   z
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 29(16,17): Variable never used:   i
+>>> Warning 202 "0Bluetooth_CCSBD.c" Line 29(20,21): Variable never used:   j
+      Memory usage:   ROM=6%      RAM=5% - 13%
+      0 Errors,  11 Warnings.

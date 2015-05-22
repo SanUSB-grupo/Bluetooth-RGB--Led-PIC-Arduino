@@ -1,0 +1,187 @@
+/****************MODEM Bluetooth HC-05 HC-07 MASTER / SLAVE - Sketch arduino*****
+ 
+ Grupo: www.tinyurl.com/SanUSB // Ligar o pino Key no pino digital 8 do uC e colocar resistor de pull-up (de 2k2 ou 10k) do pino 8 para o Vcc
+ 
+ video-aulas: www.youtube.com/SanUSB2  //Figura/Esquema: https://dl.dropboxusercontent.com/u/101922388/BluetoothSanUSB/FirmwareBT4_Sketch/HC05.jpg
+
+ Funciona para todos os APKs android disponiveis em :https://play.google.com/store pesquisar por SanUSB HC05
+ Utiliza modem bluetooth master/slave (HC05 ou Linvor v.105, etc.)
+
+
+ Video-aulas: https://www.youtube.com/watch?v=V65-Vt91rug ,  http://www.youtube.com/watch?v=5bOcVZqi0GM e
+
+ http://www.youtube.com/watch?v=vtS2rq_sO5M 
+
+ Mercado Livre: http://lista.mercadolivre.com.br/sanusb
+
+Ligacoes dos pinos do modem bluetooth (desconectar o modem dos pinos 0 (Rx) e 1 (Tx) da serial para gravar o microcontrolador (upload) 
+e depois de gravar, conectar novamente os pinos Rx do modem no pino 0 do arduino e o Tx no pino 1:
+Bluetooth--------Microcontrolador
+RX--------------- PINO 1 (Tx)
+TX----------------PINO 0 (Rx)
+GND---------------GND
+VCC---------------5V
+Key---------------PINO 8---/\/\/2K2-----5V ou 3,3V (Ligar o pino Key do modem HC05 no pino digital 8 do microcontrolador e 
+                                                    colocar resistor de pull-up (de 2k2 ou 10k) do pino 8 para o Vcc)
+Quando o Led no pino 13 estiver piscando constantemente, significa que o circuito e o programa foram executados com sucesso.
+*/
+#include <EEPROM.h>
+ 
+#define pinored 9     //3   //pinos para serem conectados ao led RGB
+#define pinoblue 10   //5
+#define pinogreen 11  //6
+
+#define pino_key 8  
+
+short int pisca=0, chegou=0, flag=0, c=0, flagRGB=0, rgb_interrupt = 0, flagstart=0, flagBD=0, vorbei=0;
+unsigned char comando[30], comand[30], n=0, m=0, k=0, c1=0, c2,c3;
+int redvalue=0, greenvalue=0, bluevalue=0;
+unsigned char G=32, ru=32, po=32, e=32, Fe=32, rr=32;
+unsigned char am=32, en=32, ta=32, ti=32, ny=32, url=32, pon=32, to=32, com=32, ba=32, rra=32;
+unsigned char S=130>>1, a=168>>1, an=86>>1, u=132>>1,us=130>>1, b=170>>1,x=136>>1,z=106>>1;
+
+
+void setup()  
+{
+  pinMode(pino_key, OUTPUT); 
+  digitalWrite(pino_key, HIGH); 
+  
+  pinMode(13, OUTPUT); 
+  taxa_serial(9600);  
+  pinMode(pinored, OUTPUT);
+  pinMode(pinogreen, OUTPUT);
+  pinMode(pinoblue, OUTPUT);
+  UBRR0H =0x00;UBRR0L =0x19; 
+  for(m=0;m<=25;m++){comando[m]=32;}
+  for(m=0;m<=25;m++){comand[m]=32;}   
+  
+   BR6(); //Es muss hier sein, um Reset durch Attention Kommand mit achunddreissig in modoNormal zu ermoeglichen  
+   m=EEPROM.read(32); c1=EEPROM.read(33);  
+   if(c1!=3 &&(m<=13 || m==255)){EEPROM.write(33, 0); }
+ 
+}
+
+void resetBT()
+{
+   rgb_interrupt = !rgb_interrupt; digitalWrite(13, rgb_interrupt); delay(1000); 
+   serial_putc(S); serial_putc(a); serial_putc(an); 
+   serial_putc(82);serial_putc(69);serial_putc(83);serial_putc(69);serial_putc(a);
+   serial_putc(13);serial_putc(10);rgb_interrupt = !rgb_interrupt; digitalWrite(13, rgb_interrupt);delay(2000);  
+}
+
+void modoAttention()
+{
+   digitalWrite(pino_key, HIGH); 
+   UBRR0H =0x00;UBRR0L =0x19; 
+   resetBT(); // Es braucht restarten
+}
+
+void modoNormal()
+{
+   digitalWrite(pino_key, LOW);  
+   resetBT(); // Es braucht restarten
+}
+
+
+void BR6() //Achtunddreissig
+{
+   modoAttention();
+   serial_putc(S); serial_putc(a); serial_putc(an); 
+   serial_putc(b);serial_putc(S);serial_putc(82);serial_putc(a);serial_putc(61); 
+   serial_putc(51);serial_putc(56);serial_putc(52);serial_putc(48);serial_putc(48);
+   serial_putc(44);serial_putc(48);serial_putc(44);serial_putc(48);serial_putc(13);serial_putc(10);
+   chegou=0;   
+   modoNormal();
+}
+
+void serial_putc(unsigned char c) 
+{
+  loop_until_bit_is_set(UCSR0A, UDRE0);
+  UDR0 = c;
+}
+
+ISR(USART_RX_vect)
+{
+  comando[n] = UDR0;  comand[n]= comando[n];
+
+  if (comando[0]!='L' && flagstart==0) {flagstart=1; flagBD=1; n=0;}
+
+  if (comando[0]!=79) {chegou=0; pisca=0;}
+
+  if (n>=11 && comando[1]==84) {flag=1;m=n;} 
+++n; 
+
+switch (comando[0])
+	{
+   case  79 : { chegou=1; flag=0; m=0; flagBD=0;} 
+   break;
+   case 'R' : { if (n>=4)  {analogWrite(pinored, 255-comando[1]); //Led RGB anodo comum//
+                            analogWrite(pinogreen, 255-comando[2]);
+                            analogWrite(pinoblue, 255-comando[3]); n=0; comando[0]=32;//Apaga R 
+                            rgb_interrupt = !rgb_interrupt; digitalWrite(13, rgb_interrupt);}}
+                            
+   /*   case 'R' : { if (n>=4)  {analogWrite(pinored, comando[1]); //Led RGB catodo comum//
+                            analogWrite(pinogreen, comando[2]);
+                            analogWrite(pinoblue, comando[3]); n=0; comando[0]=32;//Apaga R 
+                            rgb_interrupt = !rgb_interrupt; digitalWrite(13, rgb_interrupt);}}
+   */
+   break;
+   case 'L' : {flag=0; n=0; c=1; digitalWrite(13, HIGH);} 
+   break;
+   case 'D' : {flag=0; n=0; digitalWrite(13, LOW);}
+   break;
+   case 'P': { pisca=1; flag=0; n=0; } 
+   break; 
+
+          }
+				
+}
+ 
+void taxa_serial(unsigned long baud)
+{
+  unsigned int baud_sanusb = (F_CPU / 16 / baud) - 1;
+  UBRR0H = (unsigned char)(baud_sanusb >> 8);
+  UBRR0L = (unsigned char)baud_sanusb;
+  UCSR0B |= _BV(RXEN0) | _BV(TXEN0);
+  UCSR0B |= _BV(RXCIE0);
+  UCSR0B &= ~_BV(TXCIE0);
+  UCSR0C |= _BV(UCSZ01) | _BV(UCSZ00);
+}
+
+void loop() {
+
+   while (chegou==1 && vorbei && (c==1 || c1==3)){ serial_putc(79);serial_putc(75);serial_putc(' ');
+   digitalWrite(13, HIGH);  delay(200); digitalWrite(13, LOW); delay(200); m=0;n=0;}
+
+   if (pisca==1){ digitalWrite(13, HIGH);  delay(300); digitalWrite(13, LOW); delay(300);n=0;
+                  }
+
+
+      if (flag==1)  { flag=0;  
+      if (m==13) {comand[1]=a;comand[3]=78;comand[5]=77;comand[7]=61;comand[9]=S;comand[11]=b;comand[13]=u; }
+      EEPROM.write(32, m); //PLatz von m-Byte-Zaeler
+      for(k=0;k<=m;k++){EEPROM.write(k, comand[k]);} 
+      for(k=0;k<=m;k++){comand[k]=32;} m=0; // Zwounddreissig ist ' '.
+      
+      modoAttention();  //Es verliert RAM Daten wegen restart. 
+      
+      m=EEPROM.read(32); 
+      for(k=0;k<=m;k++){serial_putc(EEPROM.read(k));}
+      for(k=m+1;k<25;k++){serial_putc(32);}serial_putc(13);serial_putc(10); 
+      vorbei=1;
+      
+      chegou=0;   
+      modoNormal();
+      n=0;m=0; 
+                    } 
+                   
+     c1=EEPROM.read(33); 
+     if (chegou==1 && c1<3){ c1=3; //Die Kommunikation klappt schon wegen 1 in Start.
+     EEPROM.write(33, c1);
+     chegou=0; flag=1; c=0; m=13;
+     comand[0]=S;comand[2]=an;comand[4]=S;comand[6]=69;comand[8]=83;comand[10]=78;comand[12]=83; 
+                          }                  
+
+delay(1000);    
+n=0; 
+            }
