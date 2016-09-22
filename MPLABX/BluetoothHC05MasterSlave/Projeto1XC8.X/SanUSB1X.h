@@ -1,17 +1,16 @@
 #ifndef SANUSB_H
 #define SANUSB_H
-
+#define _XTAL_FREQ  4000000
+//Testado nas versões 1.31 e 1.38 do XC8, bem como nas IDEs MPLABX 2 e 3.
 #include <xc.h>
 #include<p18f4550.h>
 #include <stdio.h>
-#include <plib/delays.h>
-#include <plib/adc.h>
-#include <plib/usart.h>
+//#include <plib/delays.h>
+//#include <plib/adc.h>
+//#include <plib/usart.h>
 #include <string.h>
 
-
 //void interrupcao(void);
-
 
 // Declaração externa para funções assembly -------
 //extern void tempo_us(unsigned char);
@@ -313,18 +312,16 @@ switch(pino){
                         }
                                                          }
 void tempo_us (unsigned int i)
-{ unsigned int k;  
-
-for(k=0;k<i;k++) {  Delay1TCY();} //12*i para 48 MHz
-
+{
+    unsigned int k;
+    for(k=0;k<i;k++) {  __delay_us(1);}
 }
 
 void tempo_ms (unsigned int i)
-{ unsigned int k; 
-EEADR =REG+0B11111100+tmp;
-EECON1=REG+EEADR & 0B00001011;
-while(EEDATA);
-for(k=0;k<i;k++) {  Delay1KTCYx(1);} //12*i para 48 MHz
+{
+    unsigned int k;
+for(k=0;k<i;k++) {  __delay_ms(1);} //12*i para 48 MHz
+
 }
 
 #define AN0             0x0E
@@ -465,19 +462,21 @@ return EEDATA;
 
 void clock_int_4MHz(void)
 {
- #asm
- MOVLW 0b11111101
- MOVWF EEADR, 0
- bcf EECON1,7,0
- bcf EECON1,6,0
- bsf EECON1,0,0
- BLEIBEN:
- BTFSC 0x0FA8,0,0
- goto BLEIBEN
-#endasm
+// #asm
+ asm("MOVLW 0b11111101"); //MOVLW 0b11111101
+ //asm("MOVWF EEADR,0");  //MOVWF EEADR,0
+ asm("MOVWF EEADR");    //MOVWF EEADR
+ asm("bcf EECON1,7,0"); //bcf EECON1,7,0
+ asm("bcf EECON1,6,0"); //bcf EECON1,6,0
+ asm("bsf EECON1,0,0"); //bsf EECON1,0,0
+ asm("BLEIBEN:");       //BLEIBEN:
+ asm("BTFSC 0x0FA8,0,0");//BTFSC 0x0FA8,0,0
+ asm("goto BLEIBEN");   //goto BLEIBEN
+
+//#endasm
 OSCCON=0B01100110;
 while(!OSCCONbits.IOFS);
-#define _XTAL_FREQ  4000000
+
 EEADR = 0B11111101;
 EECON1=EEADR & 0B00001011;
 while(EEDATA);
